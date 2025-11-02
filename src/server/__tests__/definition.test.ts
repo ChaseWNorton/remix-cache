@@ -402,11 +402,11 @@ describe('CacheDefinition', () => {
 
   describe('stale-while-revalidate', () => {
     it('should serve stale data immediately while fetching fresh data', async () => {
-      vi.useFakeTimers({ toFake: ['Date', 'setTimeout', 'setInterval', 'setImmediate', 'clearTimeout', 'clearInterval', 'clearImmediate'] })
+      let fetchCount = 0
       const fetchFn = vi.fn(async (userId: string) => ({
         id: userId,
         name: `User ${userId}`,
-        timestamp: Date.now(),
+        fetchNumber: ++fetchCount,
       }))
 
       const userCache = cache.define({
@@ -420,25 +420,25 @@ describe('CacheDefinition', () => {
       // First fetch - cache miss
       const result1 = await userCache.get('1')
       expect(fetchFn).toHaveBeenCalledTimes(1)
-      const firstTimestamp = result1?.timestamp
+      expect(result1?.fetchNumber).toBe(1)
 
-      // Advance time past TTL but within stale period
-      vi.advanceTimersByTime(2000)
+      // Wait for TTL to expire
+      await new Promise(resolve => setTimeout(resolve, 1500))
 
-      // Should return stale data immediately
+      // Should return stale data immediately (fetchNumber still 1)
       const result2 = await userCache.get('1')
-      expect(result2?.timestamp).toBe(firstTimestamp)
+      expect(result2?.fetchNumber).toBe(1) // Stale data
 
       // Background revalidation should have been triggered
-      // Wait for microtasks and timers to complete
-      await vi.runAllTimersAsync()
+      // Wait for it to complete
+      await new Promise(resolve => setTimeout(resolve, 100))
+
+      // Verify background fetch happened
       expect(fetchFn).toHaveBeenCalledTimes(2)
 
-      // Next fetch should have fresh data
+      // Next fetch should have fresh data (fetchNumber = 2)
       const result3 = await userCache.get('1')
-      expect(result3?.timestamp).toBeGreaterThan(firstTimestamp!)
-
-      vi.useRealTimers()
+      expect(result3?.fetchNumber).toBe(2) // Fresh data from background revalidation
     })
 
     it('should not serve data past stale period', async () => {

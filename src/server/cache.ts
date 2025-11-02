@@ -300,13 +300,36 @@ export class CacheImpl extends EventEmitter implements Cache {
   async close(): Promise<void> {
     this.log('Closing cache connections')
 
+    // Unsubscribe from pub/sub
     if (this.pubsub) {
-      await this.pubsub.unsubscribe()
+      try {
+        await this.pubsub.unsubscribe()
+      } catch (e) {
+        // Ignore errors during unsubscribe
+      }
     }
 
-    await this.redis.quit()
-    await this.subscriber.quit()
-    await this.publisher.quit()
+    // Wait a tick to let any pending operations complete
+    await new Promise(resolve => setImmediate(resolve))
+
+    // Quit all Redis connections gracefully and wait for completion
+    try {
+      await this.redis.quit()
+    } catch (e) {
+      this.redis.disconnect()
+    }
+
+    try {
+      await this.subscriber.quit()
+    } catch (e) {
+      this.subscriber.disconnect()
+    }
+
+    try {
+      await this.publisher.quit()
+    } catch (e) {
+      this.publisher.disconnect()
+    }
   }
 }
 
