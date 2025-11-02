@@ -3,14 +3,16 @@
 ## Current Status
 
 ### Passing Tests
-- ✅ **179/179 tests passing (100%)**
+- ✅ **204/204 tests passing (100%)**
 - ✅ All core functionality tests passing
 - ✅ All React integration tests passing
 - ✅ All server-side tests passing
 - ✅ All export verification tests passing
 - ✅ All smoke tests passing
-- ✅ **All edge case tests passing (20 tests)**
-- ✅ **Package integration tests passing (ESM + CommonJS)**
+- ✅ All edge case tests passing (20 tests)
+- ✅ **Configuration & cleanup tests passing (18 tests)**
+- ✅ **README example tests passing (7 tests)**
+- ✅ Package integration tests passing (ESM + CommonJS)
 - ✅ Zero failing tests
 
 ## Test Coverage
@@ -30,10 +32,12 @@
 - ✅ Pattern matching
 - ✅ Key building
 
-### Integration Tests (36 tests)
+### Integration Tests (61 tests)
 - ✅ Export verification (10 tests - all exports accessible)
 - ✅ Smoke tests (6 tests - end-to-end workflows)
 - ✅ Edge cases (20 tests - null, undefined, empty, special chars, large payloads, concurrent ops, errors)
+- ✅ Configuration & cleanup (18 tests - Redis URL, TTL edge cases, event listeners, tags, patterns, modes)
+- ✅ README examples (7 tests - validates all documentation code works)
 - ✅ Package integration (ESM + CommonJS imports verified)
 
 ## Test Scripts
@@ -67,11 +71,11 @@ npm run test:package     # Build and verify package can be installed
 4. ✅ Package integration test passing (`npm run test:package`)
 5. ✅ **Ready to publish v0.1.0!**
 
-All systems green - **179/179 tests passing**. Production ready!
+All systems green - **204/204 tests passing**. Production ready!
 
 ## Test Quality
 
-- **179/179 tests passing** = 100%
+- **204/204 tests passing** = 100%
 - All features have comprehensive test coverage
 - Tests follow TDD methodology
 - Proper cleanup in all tests
@@ -79,5 +83,7 @@ All systems green - **179/179 tests passing**. Production ready!
 - Export verification ensures all public APIs are accessible
 - End-to-end smoke tests verify real-world usage patterns
 - Edge case tests cover null/undefined/empty values, special characters, large payloads, concurrent operations
+- Configuration tests verify Redis URL strings, TTL edge cases (0, very short, very large), event listener cleanup
+- README examples are tested to ensure documentation code actually works
 - Package integration tests verify both ESM and CommonJS imports work
 - TypeScript type definitions validated during build
