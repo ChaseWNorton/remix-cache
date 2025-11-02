@@ -37,10 +37,7 @@ function matchesFilter(
     if (event.tag && options.tags.includes(event.tag)) {
       return true
     }
-    if (
-      event.tags &&
-      event.tags.some((tag) => options.tags!.includes(tag))
-    ) {
+    if (event.tags && event.tags.some((tag: string) => options.tags!.includes(tag))) {
       return true
     }
   }
@@ -62,9 +59,10 @@ export function useCache(options?: UseCacheOptions) {
   const revalidator = useRevalidator()
 
   useEffect(() => {
-    if (invalidations.length === 0) return
+    if (invalidations.length === 0) return undefined
 
     const latestInvalidation = invalidations[invalidations.length - 1]
+    if (!latestInvalidation) return undefined
 
     // Check if we should revalidate
     const shouldRevalidate = matchesFilter(latestInvalidation, options)
@@ -78,5 +76,7 @@ export function useCache(options?: UseCacheOptions) {
 
       return () => clearTimeout(timeout)
     }
+
+    return undefined
   }, [invalidations, revalidator, options])
 }

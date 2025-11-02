@@ -3,6 +3,7 @@ import { createContext, useContext } from 'react'
 export interface InvalidationEvent {
   key?: string
   tag?: string
+  tags?: string[]
   pattern?: string
   keys?: string[]
   timestamp: number
